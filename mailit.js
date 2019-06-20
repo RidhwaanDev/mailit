@@ -8,7 +8,7 @@ function Commit(message){
     this.counter = 0;
     this.counter++;
 }
-
+Commit.prototype.commit= function(){}
 Commit.prototype.simplehash = function(){
     let hash = 0;
     if(this.message.length == 0){
@@ -74,6 +74,3 @@ function handleArgs(){
 }
 
 handleArgs();
-
-
-
