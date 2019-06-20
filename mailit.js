@@ -1,9 +1,7 @@
-import Logger from "./logger";
 const fs = require('fs');
 const initdir = './.mailit'
 
 const args = process.argv.slice(2);
-args.forEach(arg => console.log(arg));
 
 function Commit(message){
     this.message = message;
@@ -32,17 +30,50 @@ function isChanged(changes){
          fs.stat(file,(err,stats) => {
              if(err != null) console.log(err);
              if(stats.isFile()){
-                 console.log("file")
-                 console.log(stats)
+                 console.log(file);
+                 console.log(stats);
              }
          });
      });
  });
 }
 
-isChanged();
 
-let test = new Commit('first commit yay');
-console.log(test.simplehash());
+async function serialize(){
+    // encode final linkedlist of commits into a JSON file
+}
+
+async function deserialize(){
+    // decode JSON file of commits into linkedlist
+}
+function update(param){
+    // update HEAD and push everything remote
+}
+function handleArgs(){
+    const command = args[0];
+    const param = args[1];
+    console.log(command);
+    console.log('\n');
+
+    switch(command){
+        case 'update':
+            console.log('updating with message: ' + param)
+            update(param);
+            break;
+        case 'log':
+            showLog();
+            break;
+        case 'rollback':
+            console.log('rolling back to version ' + param)
+            rollback(param);
+            break;
+        default:
+            console.log('no command');
+            break;
+    }
+}
+
+handleArgs();
+
 
 
