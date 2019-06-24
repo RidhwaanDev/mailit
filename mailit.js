@@ -51,6 +51,7 @@ let history = null;
  *  Try to find prefs.json and history.json. If we cant find them
  *  then it means it is a first start. synchronous because we can't continue unless we know this information
  */
+git config --global user.email "MY_NAME@example.com"
 
 function firstStart() {
     const local = '.';
