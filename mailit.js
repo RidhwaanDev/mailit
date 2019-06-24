@@ -1,135 +1,143 @@
 const fs = require('fs');
 const readline = require('readline');
 const nodemailer = require('nodemailer');
-const initdir = './.mailit';
-let log = console.log();
-const args = process.argv.slice(2);
+
+// some string constants
 const welcome= 'Welcome to mailit, a simple version control system through email. Please enter your email address.' + '\n';
 const options = 'Choose an option:' + '\n' + 'update => sends the project ( all the files in the directory) to your email'
-                                            + 'log =>  shows the project history'
-                                            + 'rollback ( versionId) => restore the project to a specific version ( id can be found in log )';
+    + '\n' + 'log =>  shows the project history'
+    + '\n' + 'rollback (versionId) => restore the project to a specific version ( id can be found in log )';
 const prefsJson = 'prefs.json';
 const historyJson = 'history.json';
+const initdir = './.mailit';
+// fun terminal colors
+const TERM_COLORS = {
 
-function Commit(message){
-    this.message = message;
-    this.counter = 0;
-}
+    Reset : "\x1b[0m",
+    Bright : "\x1b[1m",
+    Dim : "\x1b[2m",
+    Underscore : "\x1b[4m",
+    Blink : "\x1b[5m",
+    Reverse : "\x1b[7m",
+    Hidden : "\x1b[8m",
 
-Commit.prototype.commit= function(){};
-Commit.prototype.simplehash = function(){
-    let hash = 0;
-    if(this.message.length == 0){
-        return hash;
-    }
-    for(let i = 0; i < this.message.length; i++){
-        let ch = this.message.charCodeAt(i);
-        hash = ((hash << 5) - hash) + ch;
-        hash = hash & hash;
-    }
-}
-/**
- *  Try to find prefs.json and history.json. If we cant find them
- *  then it means it is a first start.
- */
-function firstStart(callback){
+    FgBlack : "\x1b[30m",
+    FgRed : "\x1b[31m",
+    FgGreen : "\x1b[32m",
+    FgYellow : "\x1b[33m",
+    FgBlue : "\x1b[34m",
+    FgMagenta : "\x1b[35m",
+    FgCyan : "\x1b[36m",
+    FgWhite : "\x1b[37m",
 
- const local = '.';
-// convert this to synchronoous
- fs.readdirSync(local ,(err, files ) => {
-     if(err){
-         clog(err);
-         return;
-     }
-     let filePromise = new Promise( (resolve,reject)=> {
-         let foundHistory = false;
-         let foundPrefs = false;
-         for(let i = 0; i < files.length; i++){
-             try{
-                let stats = fs.statSync(file);
-                 if(stats.isFile()){
-                     if(file === prefsJson){
-                         console.log("found existing prefs");
-                         foundPrefs = true;
-                     }
-                     if(file === historyJson ){
-                         console.log("loading history");
-                         foundHistory = true;
-                     }
-                 }
-             }
-             catch(err){
-                console.log(err) ;
-             }
-         }
-         let found = foundPrefs && foundHistory;
-         resolve(found)
-     });
-        filePromise.then(
-            result =>  { callback(result)},
-            error => { console.log(error) }
-        )
- });
-}
+    BgBlack : "\x1b[40m",
+    BgRed : "\x1b[41m",
+    BgGreen : "\x1b[42m",
+    BgYellow : "\x1b[43m",
+    BgBlue : "\x1b[44m",
+    BgMagenta : "\x1b[45m",
+    BgCyan : "\x1b[46m",
+    BgWhite : "\x1b[47m",
 
-function handleArgs(command, param){
-    switch(command){
-        case 'init':
-            if(!prefs())
-            {
-                console.log("Please put your email address in prefs.txt (first line)")
-            }
-
-            break;
-        case 'update':
-            console.log('updating with message: ' + param);
-            update(param);
-            break;
-        case 'log':
-            showLog();
-            break;
-        case 'state':
-            showState();
-            break;
-        case 'rollback':
-            console.log('rolling back to version ' + param);
-            rollback(param);
-            break;
-        default:
-            console.log('no command');
-            break;
-    }
-}
+};
+// input
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+// history object
+let history = null;
+/*
+ *  Try to find prefs.json and history.json. If we cant find them
+ *  then it means it is a first start. synchronous because we can't continue unless we know this information
+ */
 
-function takeInput(question, callback){
-    let ans = null;
-    rl.question(question, (answer) => {
-        ans = answer;
-        rl.close();
-        callback(ans);
-    });
+function firstStart() {
+    const local = '.';
+    let files = [];
+    try {
+        files = fs.readdirSync(local);
+    } catch (exception) {
+        console.log(exception);
+    }
+    let stats = null;
+    for (let i = 0; i < files.length; i++) {
+        const str = files[i];
+        stats = fs.statSync(files[i]);
+        if (stats.isFile()) {
+            // if prefsJson or historyJson is there then it is not first start
+            if (str === prefsJson || str === historyJson) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
-function writeInitialSetupFiles(stringEmail){
-    let prefsObj= {
-        email : stringEmail
-    };
-    let historyObj = {
+    function handleArgs(command, param) {
+        switch (command) {
+            case 'init':
+                if (!prefs()) {
+                    console.log("Please put your email address in prefs.txt (first line)")
+                }
+                break;
+            case 'update':
+                console.log('updating with message: ' + param);
+                update(param);
+                break;
+            case 'log':
+                showLog();
+                break;
+            case 'state':
+                showState();
+                break;
+            case 'rollback':
+                console.log('rolling back to version ' + param);
+                rollback(param);
+                break;
+            default:
+                console.log('no command');
+                break;
+        }
+    }
 
-    };
-    fs.appendFile(prefsJson,prefsObj.toString(),(err) => {;
-        if(err) console.log(err);
-        console.log("created prefs.json and wrote your email address to it.");
-    });
+    function updpate(){
+    }
 
-    fs.appendFile(historyJson,historyObj.toString(),(err) => {
-        if(err) console.log(err);
-        console.log("created history.json. This will store all the updates");
-    })
-}
+    function takeInput(question, callback) {
+        rl.question(question, (answer) => {
+            rl.close();
+            callback(answer);
+        });
+    }
 
-firstStart( (bool) => { console.log(bool)});
+    function writeInitialSetupFiles(stringEmail) {
+        let prefsObj = {
+            email: stringEmail
+        };
+        let historyObj = {};
+        fs.appendFile(prefsJson, prefsObj.toString(), (err) => {
+            ;
+            if (err) console.log(err);
+            console.log("created prefs.json and wrote your email address to it.");
+        });
+
+        fs.appendFile(historyJson, historyObj.toString(), (err) => {
+            if (err) console.log(err);
+            console.log("created history.json. This will store all the updates");
+        })
+    }
+
+    if (firstStart()) {
+        takeInput(welcome, (ans) => {
+            console.log('Welcome ' + ans)
+        });
+    } else {
+        history = parseHistory();
+        takeInput(options,handleArgs);
+    }
+    function parseHistory(){
+        // TODO: implement a Graph class
+    }
+
 
