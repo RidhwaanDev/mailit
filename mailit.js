@@ -2,9 +2,12 @@ const fs = require('fs');
 const readline = require('readline');
 const nodemailer = require('nodemailer');
 const initdir = './.mailit';
-
+let log = console.log();
 const args = process.argv.slice(2);
-
+const welcome= 'Welcome to mailit, a simple version control system through email. Please enter your email address.' + '\n';
+const options = 'Choose an option:' + '\n' + 'update => sends the project ( all the files in the directory) to your email'
+                                            + 'log =>  shows the project history'
+                                            + 'rollback ( versionId) => restore the project to a specific version ( id can be found in log )';
 const prefsJson = 'prefs.json';
 const historyJson = 'history.json';
 
@@ -24,52 +27,52 @@ Commit.prototype.simplehash = function(){
         hash = ((hash << 5) - hash) + ch;
         hash = hash & hash;
     }
-    this.id = hash;
 }
+/**
+ *  Try to find prefs.json and history.json. If we cant find them
+ *  then it means it is a first start.
+ */
+function firstStart(callback){
 
-function firstStart(){
- // go through all the files and see if any has changed
  const local = '.';
- let foundHistory = false;
- let foundPrefs = false;
-
- fs.readdir(local ,(err, files ) => {
-     files.forEach(file => {
-         fs.stat(file,(err,stats) => {
-             if(err != null) console.log(err);
-             if(stats.isFile()){
-
-                 if(file.localeCompare(prefsJson) === 0){
-                     console.log("found existing prefs");
-                     foundPrefs = true;
+// convert this to synchronoous
+ fs.readdirSync(local ,(err, files ) => {
+     if(err){
+         clog(err);
+         return;
+     }
+     let filePromise = new Promise( (resolve,reject)=> {
+         let foundHistory = false;
+         let foundPrefs = false;
+         for(let i = 0; i < files.length; i++){
+             try{
+                let stats = fs.statSync(file);
+                 if(stats.isFile()){
+                     if(file === prefsJson){
+                         console.log("found existing prefs");
+                         foundPrefs = true;
+                     }
+                     if(file === historyJson ){
+                         console.log("loading history");
+                         foundHistory = true;
+                     }
                  }
-
-                 if(file.localeCompare(historyJson) === 0){
-                     console.log("loading history");
-                     foundHistory = true;
-                 }
-
              }
-         });
+             catch(err){
+                console.log(err) ;
+             }
+         }
+         let found = foundPrefs && foundHistory;
+         resolve(found)
      });
+        filePromise.then(
+            result =>  { callback(result)},
+            error => { console.log(error) }
+        )
  });
-
-// if history.json or prefs.json do not exists then this a first start.
-    return (foundHistory && foundPrefs)
 }
 
-async function update(param){
-    //
-}
-function showState(){
-
-}
-
-function handleArgs(){
-    const command = args[0];
-    const param = args[1];
-    console.log(command);
-
+function handleArgs(command, param){
     switch(command){
         case 'init':
             if(!prefs())
@@ -97,32 +100,36 @@ function handleArgs(){
             break;
     }
 }
-
-
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-function takeInput(question){
+function takeInput(question, callback){
     let ans = null;
     rl.question(question, (answer) => {
-        // TODO: Log the answer in a database
         ans = answer;
         rl.close();
+        callback(ans);
     });
-    return ans;
+}
+function writeInitialSetupFiles(stringEmail){
+    let prefsObj= {
+        email : stringEmail
+    };
+    let historyObj = {
+
+    };
+    fs.appendFile(prefsJson,prefsObj.toString(),(err) => {;
+        if(err) console.log(err);
+        console.log("created prefs.json and wrote your email address to it.");
+    });
+
+    fs.appendFile(historyJson,historyObj.toString(),(err) => {
+        if(err) console.log(err);
+        console.log("created history.json. This will store all the updates");
+    })
 }
 
-let first = firstStart();
-if(first){
-    const optionsString = 'Welcome to mailit, a simple version control system through email. Please enter your email address.';
-    let email = takeInput(optionsString);
-    console.log(email);t
-    // write email to prefs
-    // writeEmailToPrefs();
-    // handleArgs(res);
-} else {
-
-}
+firstStart( (bool) => { console.log(bool)});
 
