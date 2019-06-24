@@ -51,7 +51,6 @@ let history = null;
  *  Try to find prefs.json and history.json. If we cant find them
  *  then it means it is a first start. synchronous because we can't continue unless we know this information
  */
-git config --global user.email "MY_NAME@example.com"
 
 function firstStart() {
     const local = '.';
@@ -75,70 +74,70 @@ function firstStart() {
 
     return true;
 }
-    function handleArgs(command, param) {
-        switch (command) {
-            case 'init':
-                if (!prefs()) {
-                    console.log("Please put your email address in prefs.txt (first line)")
-                }
-                break;
-            case 'update':
-                console.log('updating with message: ' + param);
-                update(param);
-                break;
-            case 'log':
-                showLog();
-                break;
-            case 'state':
-                showState();
-                break;
-            case 'rollback':
-                console.log('rolling back to version ' + param);
-                rollback(param);
-                break;
-            default:
-                console.log('no command');
-                break;
-        }
+function handleArgs(command, param) {
+    switch (command) {
+        case 'init':
+            if (!prefs()) {
+                console.log("Please put your email address in prefs.txt (first line)")
+            }
+            break;
+        case 'update':
+            console.log('updating with message: ' + param);
+            update(param);
+            break;
+        case 'log':
+            showLog();
+            break;
+        case 'state':
+            showState();
+            break;
+        case 'rollback':
+            console.log('rolling back to version ' + param);
+            rollback(param);
+            break;
+        default:
+            console.log('no command');
+            break;
     }
+}
 
-    function updpate(){
-    }
+function updpate(){
+}
 
-    function takeInput(question, callback) {
-        rl.question(question, (answer) => {
-            rl.close();
-            callback(answer);
-        });
-    }
+function takeInput(question, callback) {
+    rl.question(question, (answer) => {
+        rl.close();
+        callback(answer);
+    });
+}
 
-    function writeInitialSetupFiles(stringEmail) {
-        let prefsObj = {
-            email: stringEmail
-        };
-        let historyObj = {};
-        fs.appendFile(prefsJson, prefsObj.toString(), (err) => {
-            ;
-            if (err) console.log(err);
-            console.log("created prefs.json and wrote your email address to it.");
-        });
+function writeInitialSetupFiles(stringEmail) {
+    let prefsObj = {
+        email: stringEmail
+    };
+    let historyObj = {};
+    fs.appendFile(prefsJson, prefsObj.toString(), (err) => {
+        ;
+        if (err) console.log(err);
+        console.log("created prefs.json and wrote your email address to it.");
+    });
 
-        fs.appendFile(historyJson, historyObj.toString(), (err) => {
-            if (err) console.log(err);
-            console.log("created history.json. This will store all the updates");
-        })
-    }
+    fs.appendFile(historyJson, historyObj.toString(), (err) => {
+        if (err) console.log(err);
+        console.log("created history.json. This will store all the updates");
+    })
+}
 
-    if (firstStart()) {
-        takeInput(welcome, (ans) => {
-            console.log('Welcome ' + ans)
-        });
-    } else {
-        history = parseHistory();
-        takeInput(options,handleArgs);
-    }
-    function parseHistory(){
-        // TODO: implement a Graph class
-    }
+if (firstStart()) {
+    takeInput(welcome, (ans) => {
+        console.log('Welcome ' + ans)
+    });
+} else {
+    history = parseHistory();
+    takeInput(options,handleArgs);
+}
+function parseHistory(){
+    // TODO: implement a Graph class
+}
 
 
