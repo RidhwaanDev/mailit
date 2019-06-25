@@ -1,10 +1,7 @@
-function Commit(message){
+exports.Commit = function Commit(message){
     this.message = message;
+    this.id = id;
     this.counter = 0;
-}
-
-Commit.prototype.commit= function(){
-
 };
 
 Commit.prototype.simplehash = function() {

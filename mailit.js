@@ -1,15 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const nodemailer = require('nodemailer');
-
-// some string constants
-const welcome= 'Welcome to mailit, a simple version control system through email. Please enter your email address.' + '\n';
-const options = 'Choose an option:' + '\n' + 'update => sends the project ( all the files in the directory) to your email'
-    + '\n' + 'log =>  shows the project history'
-    + '\n' + 'rollback (versionId) => restore the project to a specific version ( id can be found in log )';
-const prefsJson = 'prefs.json';
-const historyJson = 'history.json';
-const initdir = './.mailit';
+const commit = require('commit');
 // fun terminal colors
 const TERM_COLORS = {
 
@@ -40,6 +32,15 @@ const TERM_COLORS = {
     BgWhite : "\x1b[47m",
 
 };
+// some string constants
+const welcome= 'Welcome to mailit, a simple version control system through email. Please enter your email address.' + '\n';
+const options = 'Choose an option:' + '\n' + TERM_COLORS.FgRed + 'update => sends the project ( all the files in the directory) to your email'
+    + '\n' + TERM_COLORS.FgGreen + 'log =>  shows the project history'
+    + '\n' + TERM_COLORS.FgMagenta + 'rollback (versionId) => restore the project to a specific version ( id can be found in log )';
+const prefsJson = 'prefs.json';
+const historyJson = 'history.json';
+const initdir = './.mailit';
+
 // input
 const rl = readline.createInterface({
     input: process.stdin,
@@ -51,7 +52,6 @@ let history = null;
  *  Try to find prefs.json and history.json. If we cant find them
  *  then it means it is a first start. synchronous because we can't continue unless we know this information
  */
-
 function firstStart() {
     const local = '.';
     let files = [];
@@ -101,7 +101,10 @@ function handleArgs(command, param) {
     }
 }
 
-function updpate(){
+function update(commitMessage){
+    let commit = new Commit(commitMessage);
+    commit.id = commit.simplehash();
+    console.log(commit.id);
 }
 
 function takeInput(question, callback) {
@@ -116,25 +119,26 @@ function writeInitialSetupFiles(stringEmail) {
         email: stringEmail
     };
     let historyObj = {};
-    fs.appendFile(prefsJson, prefsObj.toString(), (err) => {
-        ;
+    fs.appendFile(prefsJson, JSON.stringify(prefsObj), (err) => {
         if (err) console.log(err);
-        console.log("created prefs.json and wrote your email address to it.");
+        console.log( TERM_COLORS.FgGreen, "created prefs.json and wrote your email address to it.");
     });
 
-    fs.appendFile(historyJson, historyObj.toString(), (err) => {
+    fs.appendFile(historyJson, JSON.stringify(prefsObj), (err) => {
         if (err) console.log(err);
         console.log("created history.json. This will store all the updates");
-    })
+    });
+    console.log(TERM_COLORS.FgWhite);
 }
 
 if (firstStart()) {
     takeInput(welcome, (ans) => {
-        console.log('Welcome ' + ans)
+        console.log( TERM_COLORS.Bright, 'Welcome ' + ans)
+        writeInitialSetupFiles(ans);
     });
 } else {
     history = parseHistory();
-    takeInput(options,handleArgs);
+    takeInput(options , handleArgs);
 }
 function parseHistory(){
     // TODO: implement a Graph class
