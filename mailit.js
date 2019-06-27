@@ -133,7 +133,7 @@ function writeInitialSetupFiles(stringEmail) {
 
 if (firstStart()) {
     takeInput(welcome, (ans) => {
-        console.log( TERM_COLORS.Bright, 'Welcome ' + ans)
+        console.log( TERM_COLORS.Bright, 'Welcome ' + ans);
         writeInitialSetupFiles(ans);
     });
 } else {

@@ -14,4 +14,4 @@ Commit.prototype.simplehash = function() {
         hash = ((hash << 5) - hash) + ch;
         hash = hash & hash;
     }
-}
+};
