@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b39e2424-6779-4e9e-82dc-e0dde393bb92" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/commit.js" beforeDir="false" afterPath="$PROJECT_DIR$/commit.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mailit.js" beforeDir="false" afterPath="$PROJECT_DIR$/mailit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -28,8 +27,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/commit.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
-              <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+            <state relative-caret-position="336">
+              <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -66,7 +65,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="94" />
+    <option name="x" value="19" />
+    <option name="y" value="57" />
     <option name="width" value="1839" />
     <option name="height" value="1015" />
   </component>
@@ -90,6 +90,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -124,12 +125,12 @@
       <option name="presentableId" value="Default" />
       <updated>1561387117629</updated>
       <workItem from="1561387120901" duration="15464000" />
-      <workItem from="1561580641790" duration="692000" />
+      <workItem from="1561580641790" duration="903000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16156000" />
+    <option name="totallyTimeSpent" value="16367000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -141,7 +142,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="94" width="1839" height="1015" extended-state="0" />
+    <frame x="19" y="57" width="1839" height="1015" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24972497" />
@@ -224,8 +225,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/commit.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+        <state relative-caret-position="336">
+          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
         </state>
       </provider>
     </entry>
